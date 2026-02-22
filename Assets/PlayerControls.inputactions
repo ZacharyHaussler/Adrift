@@ -7,25 +7,7 @@
             "id": "aecd4dc9-3cab-419f-9ada-5cf85a60dd3f",
             "actions": [
                 {
-                    "name": "Move Forward",
-                    "type": "Button",
-                    "id": "195250e2-0e6b-4f47-a810-e6bc526682ed",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Move Left",
-                    "type": "Button",
-                    "id": "954fec1b-003a-4084-98c4-2dcf65ce569c",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Move Right",
+                    "name": "MoveUp",
                     "type": "Button",
                     "id": "8025be41-25f9-4e80-9b69-e14bcdcf38bd",
                     "expectedControlType": "",
@@ -34,7 +16,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Move Backward",
+                    "name": "MoveDown",
                     "type": "Button",
                     "id": "cd719083-9732-4bdd-a399-6cd2649e58e1",
                     "expectedControlType": "",
@@ -43,7 +25,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Roll Left",
+                    "name": "CounterClockwise",
                     "type": "Button",
                     "id": "96bc79af-db5d-4f21-b3b8-b56736abe090",
                     "expectedControlType": "",
@@ -52,7 +34,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Roll Right",
+                    "name": "Clockwise",
                     "type": "Button",
                     "id": "c5dac765-b30a-43a5-98b7-723cad4e0587",
                     "expectedControlType": "",
@@ -64,56 +46,12 @@
             "bindings": [
                 {
                     "name": "",
-                    "id": "baacfe24-d84f-49dd-b898-b5590e1ab65f",
-                    "path": "<Keyboard>/w",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move Forward",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "18fe273d-4218-472a-ab81-4675496f8d00",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move Forward",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "22e5bf02-50c4-41e1-aa60-7a39a5321a5f",
-                    "path": "<Keyboard>/a",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move Left",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "794e04c5-23a3-4b1b-a84b-e598da31c2d9",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Move Left",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "4dfd24c6-3a9e-4e6c-a9d4-95bc909d1401",
-                    "path": "<Keyboard>/s",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move Right",
+                    "action": "MoveUp",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -124,7 +62,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move Right",
+                    "action": "MoveUp",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -135,18 +73,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move Backward",
+                    "action": "MoveDown",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "20b4152c-2f33-4432-b217-da2537119f1e",
-                    "path": "<Keyboard>/d",
+                    "path": "<Keyboard>/leftShift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Move Backward",
+                    "action": "MoveDown",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -157,7 +95,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Roll Left",
+                    "action": "CounterClockwise",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -168,7 +106,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Roll Left",
+                    "action": "CounterClockwise",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -179,7 +117,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Roll Right",
+                    "action": "Clockwise",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -190,7 +128,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Roll Right",
+                    "action": "Clockwise",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
