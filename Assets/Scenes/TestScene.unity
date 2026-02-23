@@ -32438,8 +32438,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   rigidbody: {fileID: 1654787895}
-  XSensitivity: 300
-  YSensitivity: 300
+  XSensitivity: 500
+  YSensitivity: 500
 --- !u!54 &1654787895
 Rigidbody:
   m_ObjectHideFlags: 0

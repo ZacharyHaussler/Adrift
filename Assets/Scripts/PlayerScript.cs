@@ -37,6 +37,13 @@ public class PlayerScript : MonoBehaviour {
 
     }
 
+    void Update() {
+        if (OnWall && Input.GetKeyDown(KeyCode.Space)) {
+            OnWall = false;
+            rigidbody.AddForce(16f * transform.forward, ForceMode.Impulse);
+        }
+    }
+
     void LateUpdate() {
 
         XRotation = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * YSensitivity * -1;
@@ -48,7 +55,6 @@ public class PlayerScript : MonoBehaviour {
 
     void FixedUpdate(){
 
-        
         x = Input.GetAxisRaw("Horizontal");
         z = Input.GetAxisRaw("Vertical");
         y = (Input.GetKey(KeyCode.Space) ? 1f : 0f) - (Input.GetKey(KeyCode.LeftShift) ? 1f : 0f);
@@ -60,9 +66,6 @@ public class PlayerScript : MonoBehaviour {
 
         if (!OnWall) {
             rigidbody.AddForce(4f * JetpackForce.normalized, ForceMode.Force);
-        } else if (Input.GetKeyDown(KeyCode.Space)) {
-            OnWall = false;
-            rigidbody.AddForce(10f * transform.forward, ForceMode.Impulse);
         }
     }
 
