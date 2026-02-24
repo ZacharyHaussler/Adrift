@@ -32437,12 +32437,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 48006681cb5208d459bf61856fae314e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  rigidbody: {fileID: 1654787895}
-  JetpackForce: 12
   XSensitivity: 1000
   YSensitivity: 1000
-  GrapplePrefab: {fileID: 1404575879616676263, guid: 33436bd6de73b5a4c90d1b807b4659ad, type: 3}
+  JumpForce: 15
+  JetpackForce: 12
+  GrapplePrefab: {fileID: 1776485039808634825, guid: 40e5ae958b91a28449f514a8b6e2ec40, type: 3}
   GrappleLinePrefab: {fileID: 4096080091513757669, guid: 116d2db7f1dfd4a098fb7ed55419ec88, type: 3}
+  GrappleLaunchSpeed: 30
 --- !u!54 &1654787895
 Rigidbody:
   m_ObjectHideFlags: 0
