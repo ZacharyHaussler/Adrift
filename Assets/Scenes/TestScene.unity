@@ -32438,9 +32438,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   rigidbody: {fileID: 1654787895}
-  XSensitivity: 500
-  YSensitivity: 500
+  JetpackForce: 12
+  XSensitivity: 1000
+  YSensitivity: 1000
   GrapplePrefab: {fileID: 1404575879616676263, guid: 33436bd6de73b5a4c90d1b807b4659ad, type: 3}
+  GrappleLinePrefab: {fileID: 4096080091513757669, guid: 116d2db7f1dfd4a098fb7ed55419ec88, type: 3}
 --- !u!54 &1654787895
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -32467,7 +32469,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!1 &1677677431
 GameObject:
   m_ObjectHideFlags: 0

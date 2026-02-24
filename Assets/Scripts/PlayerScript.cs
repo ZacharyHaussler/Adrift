@@ -7,6 +7,7 @@ public class PlayerScript : MonoBehaviour {
 
     //Physics
     public Rigidbody rigidbody;
+    public float JetpackForce = 12f;
 
     //Mouse Control
     public float XSensitivity = 100f;
@@ -28,7 +29,9 @@ public class PlayerScript : MonoBehaviour {
 
     //Grapple
     public GameObject GrapplePrefab;
+    public GameObject GrappleLinePrefab;
     private GameObject Grapple;
+    private GameObject GrappleLine;
     private Vector3 GrappleVelocity;
 
 
@@ -45,23 +48,32 @@ public class PlayerScript : MonoBehaviour {
     }
 
     void Update() {
+
         if (OnWall && Input.GetKeyDown(KeyCode.Space)) {
             OnWall = false;
             rigidbody.AddForce(15f * transform.forward, ForceMode.Impulse);
         }
+
         if (Input.GetMouseButtonDown(0)) {
             GrappleThrown = true;
             Grapple = Instantiate(GrapplePrefab, transform.position + 0.6f*transform.forward, Quaternion.Euler(transform.forward));
             Grapple.GetComponent<Rigidbody>().linearVelocity = rigidbody.linearVelocity + 30f*transform.forward;
             Grapple.transform.rotation = Quaternion.LookRotation(transform.forward);
             GrappleVelocity = Grapple.GetComponent<Rigidbody>().linearVelocity;
+
+            GrappleLine = Instantiate(GrappleLinePrefab, Vector3.zero, Quaternion.identity);
+            GrappleLine.GetComponent<GrappleHandler>().player = transform;
+            GrappleLine.GetComponent<GrappleHandler>().grapple = Grapple.transform;
         }
+
         if (Input.GetMouseButtonUp(0)) {
             GrappleThrown = false;
             GrappleConnected = false;
-            GrappleVelocity = new Vector3(999,999,999);
+
             Destroy(Grapple);
+            Destroy(GrappleLine);
         }
+
         if (!GrappleConnected && GrappleThrown && GrappleVelocity != Grapple.GetComponent<Rigidbody>().linearVelocity) {
             Grapple.GetComponent<Rigidbody>().linearVelocity = new Vector3(0,0,0);
             GrappleConnected = true;
@@ -80,16 +92,16 @@ public class PlayerScript : MonoBehaviour {
     void FixedUpdate(){
 
         x = Input.GetAxisRaw("Horizontal");
-        z = Input.GetAxisRaw("Vertical");
-        y = (Input.GetKey(KeyCode.Space) ? 1f : 0f) - (Input.GetKey(KeyCode.LeftShift) ? 1f : 0f);
+        y = Input.GetAxisRaw("Vertical");
+        z = (Input.GetKey(KeyCode.Space) ? 1f : 0f) - (Input.GetKey(KeyCode.LeftShift) ? 1f : 0f);
         
-        Vector3 JetpackForce =
+        Vector3 JetpackForceV =
             x * transform.right +
             y * transform.up +
             z * transform.forward;
 
         if (!OnWall) {
-            rigidbody.AddForce(4f * JetpackForce.normalized, ForceMode.Force);
+            rigidbody.AddForce(JetpackForce * JetpackForceV.normalized, ForceMode.Force);
         }
         if (GrappleConnected) {
             rigidbody.AddForce(15f*(Grapple.transform.position - transform.position).normalized, ForceMode.Force);
@@ -102,4 +114,7 @@ public class PlayerScript : MonoBehaviour {
         rigidbody.linearVelocity = new Vector3(0,0,0);
     }
 
+    // void OnCollisionExit(Collision collision) {
+    //     OnWall = false;
+    // }
 }
