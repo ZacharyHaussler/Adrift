@@ -3,6 +3,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 //using UnityEngine.InputSystem;
 
+
 public class PlayerScript : MonoBehaviour {
 
     //Physics
@@ -23,15 +24,17 @@ public class PlayerScript : MonoBehaviour {
 
     //Gamestates
     private bool OnWall = false;
-    private bool GrappleThrown = false;
     private bool GrappleConnected = false;
 
     //Grapple
     public GameObject GrapplePrefab;
     public GameObject GrappleLinePrefab;
-    private GameObject Grapple;
+#pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
+    private GameObject? Grapple = null;
+#pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
     private GameObject GrappleLine;
-    public float GrappleLaunchSpeed = 30f;
+    public float GrappleLaunchSpeed = 60f;
+    public float GrappleMaxLength = 75f;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -55,11 +58,9 @@ public class PlayerScript : MonoBehaviour {
 
         // Spawns grapple at player position and gives it speed. Also spawns the line between player and grapple
         if (Input.GetMouseButtonDown(0)) {
-            GrappleThrown = true;
-            Grapple = Instantiate(GrapplePrefab, transform.position + 0.6f * transform.forward, Quaternion.Euler(transform.forward));
-            Grapple.GetComponent<Rigidbody>().linearVelocity = rb.linearVelocity + GrappleLaunchSpeed * transform.forward;
-            Grapple.transform.rotation = Quaternion.LookRotation(transform.forward);
-            Grapple.transform.rotation *= Quaternion.Euler(90,0,0);
+            Grapple = Instantiate(GrapplePrefab, transform.position + 0.6f * transform.forward + 0.5f * transform.up, Quaternion.Euler(transform.forward));
+            Grapple.GetComponent<Rigidbody>().linearVelocity = GrappleLaunchSpeed * transform.forward;
+            Grapple.transform.rotation = Quaternion.LookRotation(transform.forward) * Quaternion.Euler(90,0,0);
             Grapple.GetComponent<GrappleProjectileScript>().player = gameObject;
 
             GrappleLine = Instantiate(GrappleLinePrefab, Vector3.zero, Quaternion.identity);
@@ -67,13 +68,13 @@ public class PlayerScript : MonoBehaviour {
             GrappleLine.GetComponent<GrappleHandler>().grapple = Grapple.transform;
         }
 
+        if (Grapple != null && Vector3.Distance(Grapple.transform.position, transform.position) > GrappleMaxLength) {
+            KillGrapple();
+        }
+
         // Deletes the grapple and grapple line when player lets go of grapple button
         if (Input.GetMouseButtonUp(0)) {
-            GrappleThrown = false;
-            GrappleConnected = false;
-
-            Destroy(Grapple);
-            Destroy(GrappleLine);
+            KillGrapple();
         }
 
     }
@@ -118,11 +119,23 @@ public class PlayerScript : MonoBehaviour {
     void OnCollisionEnter(Collision collision) {
         OnWall = true;
         rb.linearVelocity = new Vector3(0,0,0);
+        if (GrappleConnected) {
+            KillGrapple();
+        }
     }
 
     // Called by the grapple when the grapple lands
     public void GrappleLanded() {
         GrappleConnected = true;
+    }
+
+    void KillGrapple() {
+        if (Grapple != null) {
+            GrappleConnected = false;
+            Destroy(Grapple);
+            Destroy(GrappleLine);
+            Grapple = null;
+        }
     }
 
     
