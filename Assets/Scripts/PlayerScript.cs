@@ -9,6 +9,17 @@ public class PlayerScript : MonoBehaviour {
     //Physics
     private Rigidbody rb;
 
+    //General Gameplay
+    public float PlayerHealth = 100f;
+    public float RegenDelay = 2f;
+    public float RegenSpeed = 50f;
+    public float FuelDepletionRate = 40f;
+    public float RefuelDelay = 0.5f;
+    public float RefuelSpeed = 50f;
+    private float Fuel = 100f;
+    private float HealTimeStamp = 0f;
+    private float FuelTimeStamp = 0f;
+
     //Mouse Control
     public float XSensitivity = 100f;
     public float YSensitivity = 100f;
@@ -21,6 +32,8 @@ public class PlayerScript : MonoBehaviour {
     private float z = 0.0f;
     public float JumpForce = 15f;
     public float JetpackForce = 12f;
+    public float DangerSpeed = 50f;
+    public float DeathSpeed = 75f;
 
     //Gamestates
     private bool OnWall = false;
@@ -36,6 +49,11 @@ public class PlayerScript : MonoBehaviour {
     public float GrappleLaunchSpeed = 60f;
     public float GrappleMaxLength = 75f;
 
+    //UI Control
+    public GameObject Healthbar;
+    public GameObject HealthText;
+    public GameObject FuelBar;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     // Currently responsible for locking and hiding the cursur
@@ -47,8 +65,25 @@ public class PlayerScript : MonoBehaviour {
     }
 
     // Update is called every frame
-    // Currently responsible for jumping off walls, spawning grapple, and deleting grapple
     void Update() {
+
+        // Regenerates fuel enough time has passed since last jetpack use
+        if (Time.time - FuelTimeStamp > RefuelDelay && Fuel < 100f) {
+            Fuel += RefuelSpeed * Time.deltaTime;
+            if (Fuel > 100f) {
+                Fuel = 100f;
+            }
+            UpdateFuelUI();
+        }
+
+        // Regenerates health if enough time has passed since last damage taken
+        if (Time.time - HealTimeStamp > RegenDelay && PlayerHealth < 100f) {
+            PlayerHealth += RegenSpeed * Time.deltaTime;
+            if (PlayerHealth > 100f) {
+                PlayerHealth = 100f;
+            }
+            UpdateHeathUI();
+        }
 
         // Detects when player jumps off a wall and applies force accordingly
         if (OnWall && Input.GetKeyDown(KeyCode.Space)) {
@@ -68,6 +103,7 @@ public class PlayerScript : MonoBehaviour {
             GrappleLine.GetComponent<GrappleHandler>().grapple = Grapple.transform;
         }
 
+        // Breaks grapple if its max distance is exceded
         if (Grapple != null && Vector3.Distance(Grapple.transform.position, transform.position) > GrappleMaxLength) {
             KillGrapple();
         }
@@ -102,8 +138,14 @@ public class PlayerScript : MonoBehaviour {
             x * transform.right +
             y * transform.up +
             z * transform.forward;
-        if (!OnWall) {
+        if (!OnWall && Fuel > 0f && JetpackForceV != Vector3.zero) {
             rb.AddForce(JetpackForce * JetpackForceV.normalized, ForceMode.Force);
+            Fuel -= FuelDepletionRate * Time.deltaTime;
+            if (Fuel < 0f) {
+                Fuel = 0f;
+            }
+            FuelTimeStamp = Time.time;
+            UpdateFuelUI();
         }
 
         // Applies grapple force to player if grapple is connected to a surface
@@ -117,8 +159,19 @@ public class PlayerScript : MonoBehaviour {
     // Currently responsible for stopping the player when they hit a wall and allowing player to jump off a wall
     // Will need to be modified when other possible collisions are added, eg. bullets and other players
     void OnCollisionEnter(Collision collision) {
-        OnWall = true;
+        
+        // Collision damage if player is moving too fast
+        if (collision.relativeVelocity.magnitude > DeathSpeed) {
+            TakeDamage(100f);
+        } else if (collision.relativeVelocity.magnitude > DangerSpeed) {
+            TakeDamage(100f * (collision.relativeVelocity.magnitude - DangerSpeed) / (DeathSpeed - DangerSpeed));
+        }
+
+        // Causes player to stick to wall
         rb.linearVelocity = new Vector3(0,0,0);
+        OnWall = true;
+
+        // Destroys grapple to avoid sketchy nonsense
         if (GrappleConnected) {
             KillGrapple();
         }
@@ -129,6 +182,8 @@ public class PlayerScript : MonoBehaviour {
         GrappleConnected = true;
     }
 
+    // Destroys the grapple and grapple line
+    // CURRENTLY BUGGED IN SOME WAY
     void KillGrapple() {
         if (Grapple != null) {
             GrappleConnected = false;
@@ -137,6 +192,29 @@ public class PlayerScript : MonoBehaviour {
             Grapple = null;
         }
     }
+
+    // Deals damage to the player equal to given float
+    public void TakeDamage(float damage) {
+        PlayerHealth -= damage;
+        HealTimeStamp = Time.time;
+        if (PlayerHealth < 0f) {
+            PlayerHealth = 0f;
+        }
+        UpdateHeathUI();
+    }
+
+    // Updates the healthbar when damage is taken or healing is recieved 
+    private void UpdateHeathUI() {
+        Healthbar.GetComponent<RectTransform>().sizeDelta = new Vector2(4.5f * PlayerHealth, 20);
+        Healthbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(265f - (450f - 4.5f * PlayerHealth)/2, 40);
+    }
+
+    // Updates the fuel bar when fuel is lost or gained
+    private void UpdateFuelUI() {
+        FuelBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 6f * Fuel);
+        FuelBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(75, 50 - (600f - 6f * Fuel)/2);
+    }
+
 
     
 }
