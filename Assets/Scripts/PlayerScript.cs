@@ -12,6 +12,9 @@ public class PlayerScript : MonoBehaviour {
     //Physics
     private Rigidbody rb;
 
+    //Graphics
+    public GameObject PlayerModel;
+
     //General Gameplay
     public float PlayerHealth = 100f; //hp of the player as a percent (0-100)
     public float RegenDelay = 2f; //after RegenDelay seconds of not taking damage, the player will begin regenerating health
@@ -179,6 +182,8 @@ public class PlayerScript : MonoBehaviour {
         if (GrappleConnected) {
             KillGrapple();
         }
+
+        PlayerModel.GetComponent<PlayerModelScript>().LandedOnWall(collision);
     }
 
     // Called by the grapple when the grapple lands
@@ -219,6 +224,10 @@ public class PlayerScript : MonoBehaviour {
     private void UpdateFuelUI() {
         FuelBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 6f * Fuel);
         FuelBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(75, 50 - (600f - 6f * Fuel)/2);
+    }
+
+    public bool IsOnWall() {
+        return OnWall;
     }
 
 
