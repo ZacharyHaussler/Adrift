@@ -1,10 +1,10 @@
-//using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 //using UnityEngine.InputSystem;
 using TMPro;
 using System;
 using Unity.Mathematics;
+using UnityEngine.UI;
 
 
 public class PlayerScript : MonoBehaviour {
@@ -59,6 +59,10 @@ public class PlayerScript : MonoBehaviour {
     public GameObject Healthbar; //connected to the green bar on the UI that displays the player's hp
     public GameObject HealthText; //connected to the text above the green bar on the UI. Displays a label and a numerical value for the player's health
     public GameObject FuelBar; //connected to the orange bar on the UI that displays the player's fuel
+    public GameObject SpeedBar;
+    public GameObject Exclaim;
+    public GameObject SkullWarning;
+    private float SpeedBarMax;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -67,7 +71,9 @@ public class PlayerScript : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-
+        SpeedBarMax = DeathSpeed + DeathSpeed/12;
+        Exclaim.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -250f + DangerSpeed/SpeedBarMax*600f);
+        UpdateSpeedUI();
     }
 
     // Update is called every frame
@@ -95,6 +101,7 @@ public class PlayerScript : MonoBehaviour {
         if (OnWall && Input.GetKeyDown(KeyCode.Space)) {
             OnWall = false;
             rb.AddForce(JumpForce * transform.forward, ForceMode.Impulse);
+            UpdateSpeedUI();
         }
 
         // Spawns grapple at player position and gives it speed. Also spawns the line between player and grapple
@@ -153,12 +160,14 @@ public class PlayerScript : MonoBehaviour {
             }
             FuelTimeStamp = Time.time;
             UpdateFuelUI();
+            UpdateSpeedUI();
         }
 
         // Applies grapple force to player if grapple is connected to a surface
         if (GrappleConnected) {
             rb.AddForce(15f*(Grapple.transform.position - transform.position).normalized, ForceMode.Force);
             OnWall = false;
+            UpdateSpeedUI();
         }
     }
 
@@ -184,6 +193,7 @@ public class PlayerScript : MonoBehaviour {
         }
 
         PlayerModel.GetComponent<PlayerModelScript>().LandedOnWall(collision);
+        UpdateSpeedUI();
     }
 
     // Called by the grapple when the grapple lands
@@ -224,6 +234,33 @@ public class PlayerScript : MonoBehaviour {
     private void UpdateFuelUI() {
         FuelBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 6f * Fuel);
         FuelBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(75, 50 - (600f - 6f * Fuel)/2);
+    }
+
+    private void UpdateSpeedUI() {
+        if (SpeedBarMax < rb.linearVelocity.magnitude) {
+            SpeedBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 600);
+            SpeedBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-75, 50);
+        } else {
+            SpeedBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, rb.linearVelocity.magnitude/SpeedBarMax*600f);
+            SpeedBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-75, -250f + rb.linearVelocity.magnitude/SpeedBarMax*300f);
+        }
+
+        if (rb.linearVelocity.magnitude >= DeathSpeed) {
+            SpeedBar.GetComponent<Image>().color = new Color32(230, 50, 30, 255); 
+            SkullWarning.GetComponent<CanvasGroup>().alpha = 0.8f;
+            Exclaim.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.8f;
+
+        } else if (rb.linearVelocity.magnitude >= DangerSpeed) {
+            SpeedBar.GetComponent<Image>().color = new Color32(230, 200, 30, 255); 
+            SkullWarning.GetComponent<CanvasGroup>().alpha = 0.25f;
+            Exclaim.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.8f;
+        } else {
+            SpeedBar.GetComponent<Image>().color = new Color32(33, 188, 232, 255);
+            SkullWarning.GetComponent<CanvasGroup>().alpha = 0.25f;
+            Exclaim.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.25f;
+        }
+
+        
     }
 
     public bool IsOnWall() {
