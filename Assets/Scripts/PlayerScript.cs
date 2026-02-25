@@ -2,6 +2,9 @@
 using Unity.VisualScripting;
 using UnityEngine;
 //using UnityEngine.InputSystem;
+using TMPro;
+using System;
+using Unity.Mathematics;
 
 
 public class PlayerScript : MonoBehaviour {
@@ -10,49 +13,49 @@ public class PlayerScript : MonoBehaviour {
     private Rigidbody rb;
 
     //General Gameplay
-    public float PlayerHealth = 100f;
-    public float RegenDelay = 2f;
-    public float RegenSpeed = 50f;
-    public float FuelDepletionRate = 40f;
-    public float RefuelDelay = 0.5f;
-    public float RefuelSpeed = 50f;
-    private float Fuel = 100f;
-    private float HealTimeStamp = 0f;
-    private float FuelTimeStamp = 0f;
+    public float PlayerHealth = 100f; //hp of the player as a percent (0-100)
+    public float RegenDelay = 2f; //after RegenDelay seconds of not taking damage, the player will begin regenerating health
+    public float RegenSpeed = 50f; //health regenerated per second when the player is regenerating health
+    public float FuelDepletionRate = 40f; //fuel depleted per second when using the jetpack
+    public float RefuelDelay = 0.5f; //after RefuelDelay seconds of not using fuel, the player will begin to regenerate fuel 
+    public float RefuelSpeed = 50f; //fuel regenerated per second when the player is regenerating fuel
+    public float Fuel = 100f; //jetpack fuel the player has as a percent (0-100)
+    private float HealTimeStamp = 0f; //Time.time value of the last time the player took damage. Used w/ RegenDelay to determine when the player begins regenerating hp
+    private float FuelTimeStamp = 0f; //Time.time value of the last time the jetpack was used. Used w/ RefuelDelay to determine when the player begins regenerating fuel
 
     //Mouse Control
-    public float XSensitivity = 100f;
-    public float YSensitivity = 100f;
-    private float XRotation;
-    private float YRotation;
+    public float XSensitivity = 100f; //mouse sensitivity in the horizontal direction
+    public float YSensitivity = 100f; //mouse sensitivity in the vertical direction
+    private float XRotation; //degrees the player rotates about the local x axis every frame. Calculated with YSensitivity
+    private float YRotation; //degrees the player rotates about the local y axis every frame. Calculated with XSensitivity
 
     //Player Movement
-    private float x = 0.0f;
-    private float y = 0.0f;
-    private float z = 0.0f;
-    public float JumpForce = 15f;
-    public float JetpackForce = 12f;
-    public float DangerSpeed = 50f;
-    public float DeathSpeed = 75f;
+    private float x = 0.0f; //variables that store the player's intention with respect to jetpack movement
+    private float y = 0.0f; // ^^
+    private float z = 0.0f; // ^^
+    public float JumpForce = 15f; //force exerted on the player when jumping off a wall (using ForceMode.Impulse)
+    public float JetpackForce = 12f; //force exerted on the player every physics frame when using the jetpack (using ForceMode.Force)
+    public float DangerSpeed = 25f; //minimum speed at which the player will take damage upon hitting a wall
+    public float DeathSpeed = 50f; //speed at which the player will take 100% damage upon hitting a wall
 
     //Gamestates
-    private bool OnWall = false;
-    private bool GrappleConnected = false;
+    private bool OnWall = false; //stores if the player is on a wall. When true, disables jetpack movement and enables jumping
+    private bool GrappleConnected = false; //stores if the grapple has latched onto a surface. When true, force due to the grapple is applied to the player
 
     //Grapple
-    public GameObject GrapplePrefab;
-    public GameObject GrappleLinePrefab;
+    public GameObject GrapplePrefab; //prefab for the grapple projectile object
+    public GameObject GrappleLinePrefab; //prefab for the line that connects the grapple projectile and the player
 #pragma warning disable CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-    private GameObject? Grapple = null;
+    private GameObject? Grapple = null; //object that stores the instance of each grapple. Is null when no grapple is active
 #pragma warning restore CS8632 // The annotation for nullable reference types should only be used in code within a '#nullable' annotations context.
-    private GameObject GrappleLine;
-    public float GrappleLaunchSpeed = 60f;
-    public float GrappleMaxLength = 75f;
+    private GameObject GrappleLine; //object that stores the instance of the line that connects the grapple projectile and the player
+    public float GrappleLaunchSpeed = 60f; //base speed of the grapple projectile when it is spawned in
+    public float GrappleMaxLength = 75f; //distance between grapple projectile and player at which the grapple is automatically despawned
 
     //UI Control
-    public GameObject Healthbar;
-    public GameObject HealthText;
-    public GameObject FuelBar;
+    public GameObject Healthbar; //connected to the green bar on the UI that displays the player's hp
+    public GameObject HealthText; //connected to the text above the green bar on the UI. Displays a label and a numerical value for the player's health
+    public GameObject FuelBar; //connected to the orange bar on the UI that displays the player's fuel
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -94,9 +97,10 @@ public class PlayerScript : MonoBehaviour {
         // Spawns grapple at player position and gives it speed. Also spawns the line between player and grapple
         if (Input.GetMouseButtonDown(0)) {
             Grapple = Instantiate(GrapplePrefab, transform.position + 0.6f * transform.forward + 0.5f * transform.up, Quaternion.Euler(transform.forward));
-            Grapple.GetComponent<Rigidbody>().linearVelocity = GrappleLaunchSpeed * transform.forward;
+            Grapple.GetComponent<Rigidbody>().linearVelocity = GrappleLaunchSpeed * transform.forward + Vector3.Dot(rb.linearVelocity, transform.forward) * transform.forward;
             Grapple.transform.rotation = Quaternion.LookRotation(transform.forward) * Quaternion.Euler(90,0,0);
             Grapple.GetComponent<GrappleProjectileScript>().player = gameObject;
+            
 
             GrappleLine = Instantiate(GrappleLinePrefab, Vector3.zero, Quaternion.identity);
             GrappleLine.GetComponent<GrappleHandler>().player = transform;
@@ -126,7 +130,7 @@ public class PlayerScript : MonoBehaviour {
 
     }
 
-    // FixedUpdate is called 50 times per second, andis primarily used for continuous physics calculations
+    // FixedUpdate is called 50 times per second, and is primarily used for continuous physics calculations
     // Currently responsible for player jetpack movement and force applied due to grapple
     void FixedUpdate(){
 
@@ -207,6 +211,8 @@ public class PlayerScript : MonoBehaviour {
     private void UpdateHeathUI() {
         Healthbar.GetComponent<RectTransform>().sizeDelta = new Vector2(4.5f * PlayerHealth, 20);
         Healthbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(265f - (450f - 4.5f * PlayerHealth)/2, 40);
+
+        HealthText.GetComponent<TextMeshProUGUI>().text = "Health - " + (math.floor(PlayerHealth*10)/10).ToString();
     }
 
     // Updates the fuel bar when fuel is lost or gained
