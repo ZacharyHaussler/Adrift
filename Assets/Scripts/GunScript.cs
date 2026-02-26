@@ -4,7 +4,8 @@ using TMPro;
 public class GunScript : MonoBehaviour {
 
     public GameObject BulletPrefab;
-    public string GunType;
+    public int GunType = 0;
+    private string[] GunNames = {"ProtoGun"};
     public GameObject Player;
     private GameObject Bullet;
 
@@ -27,6 +28,7 @@ public class GunScript : MonoBehaviour {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         UpdateGunSelection();
+        Debug.Log(GunNames[0]);
     }
 
     // Update is called once per frame
@@ -37,7 +39,7 @@ public class GunScript : MonoBehaviour {
                 if (!Reloading) {
                     Reloading = true;
                     ReloadTimeStamp = Time.time;
-                    ReloadIcon.SetActive(true);
+                    //ReloadIcon.SetActive(true);
                 }
             } else {
                 FireBullet();
@@ -49,14 +51,14 @@ public class GunScript : MonoBehaviour {
             Reloading = true;
             ReloadTimeStamp = Time.time;
 
-            ReloadIcon.SetActive(true);
+            //ReloadIcon.SetActive(true);
         }
 
         if (Reloading) {
             if (Time.time - ReloadTimeStamp >= ReloadTime) {
                 Ammo = AmmoCapacity;
                 Reloading = false;
-                ReloadIcon.SetActive(false);
+                //ReloadIcon.SetActive(false);
                 AmmoText.text = Ammo + " / " + AmmoCapacity;
             }
         }
@@ -68,6 +70,7 @@ public class GunScript : MonoBehaviour {
 
         if (Physics.Raycast(Player.transform.position + 0.5f * Player.transform.up, Player.transform.forward, out RaycastHit hit, 1000f)) {
             transform.LookAt(hit.point, Player.transform.up);
+            Debug.Log(hit.distance.ToString());
         } else {
             transform.rotation = Player.transform.rotation;
         }
@@ -75,22 +78,23 @@ public class GunScript : MonoBehaviour {
 
     private void UpdateGunSelection() {
         switch(GunType) {
-            case "ProtoGun":
+            case 0:
                 FireRate = 0.2f;
                 ReloadTime = 2f;
                 AmmoCapacity = 15;
                 BulletDmg = 20;
                 BulletSpeed = 100f;
-            break;
+                print("case called");
+                break;
         }
         Ammo = AmmoCapacity;
         AmmoText.text = Ammo + " / " + AmmoCapacity;
-        GunText.text = GunType;
+        GunText.text = GunNames[GunType];
     }
 
     private void FireBullet() {
         if (Time.time - LastShotTimeStamp >= FireRate) {
-            Bullet = Instantiate(BulletPrefab, transform.position + 0.5f * Player.transform.right - 0.4f * Player.transform.right + 1.5f * Player.transform.forward, Quaternion.Euler(Player.transform.forward));
+            Bullet = Instantiate(BulletPrefab, transform.position + 0.5f * Player.transform.right - 0.4f * Player.transform.right + 1.5f * Player.transform.forward, Quaternion.Euler(transform.forward));
             Bullet.GetComponent<BulletScript>().SetValues(Player, BulletDmg, BulletSpeed);
             
 
