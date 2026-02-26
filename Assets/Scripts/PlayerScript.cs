@@ -105,7 +105,7 @@ public class PlayerScript : MonoBehaviour {
         }
 
         // Spawns grapple at player position and gives it speed. Also spawns the line between player and grapple
-        if (Input.GetMouseButtonDown(1)) {
+        if (Input.GetKeyDown(KeyCode.E)) {
             Grapple = Instantiate(GrapplePrefab, transform.position + 0.6f * transform.forward + 0.5f * transform.up, Quaternion.Euler(transform.forward));
             Grapple.GetComponent<Rigidbody>().linearVelocity = GrappleLaunchSpeed * transform.forward + Vector3.Dot(rb.linearVelocity, transform.forward) * transform.forward;
             Grapple.transform.rotation = Quaternion.LookRotation(transform.forward) * Quaternion.Euler(90,0,0);
@@ -123,7 +123,7 @@ public class PlayerScript : MonoBehaviour {
         }
 
         // Deletes the grapple and grapple line when player lets go of grapple button
-        if (Input.GetMouseButtonUp(1)) {
+        if (Input.GetKeyUp(KeyCode.E)) {
             KillGrapple();
         }
 

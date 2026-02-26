@@ -8,6 +8,7 @@ public class GunScript : MonoBehaviour {
     private string[] GunNames = {"ProtoGun"};
     public GameObject Player;
     private GameObject Bullet;
+    public Camera cam;
 
     private float ReloadTime;
     private float FireRate;
@@ -28,18 +29,19 @@ public class GunScript : MonoBehaviour {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         UpdateGunSelection();
-        Debug.Log(GunNames[0]);
+        ReloadIcon.SetActive(false);
+        transform.position = new Vector3(.5f, 0.1f, 1f);
     }
 
     // Update is called once per frame
     void Update() {
 
-        if (Input.GetMouseButton(0)) {
+        if (Input.GetMouseButton(0) && !Reloading) {
             if (Ammo <= 0) {
                 if (!Reloading) {
                     Reloading = true;
                     ReloadTimeStamp = Time.time;
-                    //ReloadIcon.SetActive(true);
+                    ReloadIcon.SetActive(true);
                 }
             } else {
                 FireBullet();
@@ -51,17 +53,19 @@ public class GunScript : MonoBehaviour {
             Reloading = true;
             ReloadTimeStamp = Time.time;
 
-            //ReloadIcon.SetActive(true);
+            ReloadIcon.SetActive(true);
         }
 
         if (Reloading) {
             if (Time.time - ReloadTimeStamp >= ReloadTime) {
                 Ammo = AmmoCapacity;
                 Reloading = false;
-                //ReloadIcon.SetActive(false);
+                ReloadIcon.SetActive(false);
                 AmmoText.text = Ammo + " / " + AmmoCapacity;
             }
         }
+
+        
         
     }
 
@@ -73,6 +77,15 @@ public class GunScript : MonoBehaviour {
             Debug.Log(hit.distance.ToString());
         } else {
             transform.rotation = Player.transform.rotation;
+        }
+
+        if (Input.GetMouseButton(1)) { 
+            transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(0f, -.2f, 1f), 0.2f);
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 30, 0.2f);
+        
+        } else  {
+            transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(0.5f, -.4f, 1f), 0.1f);
+            cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 70, 0.2f);
         }
     }
 
