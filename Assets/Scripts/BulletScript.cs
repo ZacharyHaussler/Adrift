@@ -3,7 +3,7 @@ using UnityEngine;
 public class BulletScript : MonoBehaviour {
 
     private GameObject Owner;
-    private float Damage;
+    public float Damage;
 
     public void SetValues(GameObject Own, float Dmg, float Speed) {
         Owner = Own;

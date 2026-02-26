@@ -1,9 +1,10 @@
 using UnityEngine;
+using TMPro;
 
 public class GunScript : MonoBehaviour {
 
     public GameObject BulletPrefab;
-    public int GunType = 0;
+    public string GunType;
     public GameObject Player;
     private GameObject Bullet;
 
@@ -18,6 +19,11 @@ public class GunScript : MonoBehaviour {
     private bool Reloading = false;
     private float ReloadTimeStamp = 0.0f;
 
+    //UI
+    public TextMeshProUGUI AmmoText;
+    public TextMeshProUGUI GunText;
+    public GameObject ReloadIcon;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         UpdateGunSelection();
@@ -31,6 +37,7 @@ public class GunScript : MonoBehaviour {
                 if (!Reloading) {
                     Reloading = true;
                     ReloadTimeStamp = Time.time;
+                    ReloadIcon.SetActive(true);
                 }
             } else {
                 FireBullet();
@@ -41,12 +48,16 @@ public class GunScript : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.R) && Ammo != AmmoCapacity && !Reloading) {
             Reloading = true;
             ReloadTimeStamp = Time.time;
+
+            ReloadIcon.SetActive(true);
         }
 
         if (Reloading) {
             if (Time.time - ReloadTimeStamp >= ReloadTime) {
                 Ammo = AmmoCapacity;
                 Reloading = false;
+                ReloadIcon.SetActive(false);
+                AmmoText.text = Ammo + " / " + AmmoCapacity;
             }
         }
         
@@ -64,7 +75,7 @@ public class GunScript : MonoBehaviour {
 
     private void UpdateGunSelection() {
         switch(GunType) {
-            case 0:
+            case "ProtoGun":
                 FireRate = 0.2f;
                 ReloadTime = 2f;
                 AmmoCapacity = 15;
@@ -73,6 +84,8 @@ public class GunScript : MonoBehaviour {
             break;
         }
         Ammo = AmmoCapacity;
+        AmmoText.text = Ammo + " / " + AmmoCapacity;
+        GunText.text = GunType;
     }
 
     private void FireBullet() {
@@ -85,6 +98,7 @@ public class GunScript : MonoBehaviour {
             LastShotTimeStamp = Time.time;
             Ammo -= 1;
 
+            AmmoText.text = Ammo + " / " + AmmoCapacity;
         }
     }
 
