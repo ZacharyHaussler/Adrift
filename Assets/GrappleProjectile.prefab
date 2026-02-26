@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 2335750945107900127}
   - component: {fileID: 3336767793256159908}
   - component: {fileID: 8390102723803772709}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: GrappleProjectile
-  m_TagString: Untagged
+  m_TagString: Grapple Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
