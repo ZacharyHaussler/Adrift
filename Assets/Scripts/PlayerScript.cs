@@ -56,6 +56,8 @@ public class PlayerScript : MonoBehaviour {
     public float GrappleMaxLength = 75f; //distance between grapple projectile and player at which the grapple is automatically despawned
 
     //UI Control
+    public CanvasScript canvasScript; //reference to the canvas script to access the in-game settings menu
+    public static bool InGameSettingsActive = false;
     public GameObject Healthbar; //connected to the green bar on the UI that displays the player's hp
     public GameObject HealthText; //connected to the text above the green bar on the UI. Displays a label and a numerical value for the player's health
     public GameObject FuelBar; //connected to the orange bar on the UI that displays the player's fuel
@@ -74,6 +76,9 @@ public class PlayerScript : MonoBehaviour {
         SpeedBarMax = DeathSpeed + DeathSpeed/12;
         Exclaim.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -250f + DangerSpeed/SpeedBarMax*600f);
         UpdateSpeedUI();
+
+        XSensitivity = PlayerPrefs.GetFloat("XSensitivity", 500f);
+        YSensitivity = PlayerPrefs.GetFloat("YSensitivity", 500f);
     }
 
     // Update is called every frame
@@ -97,15 +102,16 @@ public class PlayerScript : MonoBehaviour {
             UpdateHeathUI();
         }
 
+        
         // Detects when player jumps off a wall and applies force accordingly
-        if (OnWall && Input.GetKeyDown(KeyCode.Space)) {
+        if (OnWall && Input.GetKeyDown(KeyCode.Space) && !InGameSettingsActive) {
             OnWall = false;
             rb.AddForce(JumpForce * transform.forward, ForceMode.Impulse);
             UpdateSpeedUI();
         }
 
         // Spawns grapple at player position and gives it speed. Also spawns the line between player and grapple
-        if (Input.GetKeyDown(KeyCode.E)) {
+        if (Input.GetKeyDown(KeyCode.E) && !InGameSettingsActive) {
             Grapple = Instantiate(GrapplePrefab, transform.position + 0.6f * transform.forward + 0.5f * transform.up, Quaternion.Euler(transform.forward));
             Grapple.GetComponent<Rigidbody>().linearVelocity = GrappleLaunchSpeed * transform.forward + Vector3.Dot(rb.linearVelocity, transform.forward) * transform.forward;
             Grapple.transform.rotation = Quaternion.LookRotation(transform.forward) * Quaternion.Euler(90,0,0);
@@ -123,20 +129,36 @@ public class PlayerScript : MonoBehaviour {
         }
 
         // Deletes the grapple and grapple line when player lets go of grapple button
-        if (Input.GetKeyUp(KeyCode.E)) {
+        if (Input.GetKeyUp(KeyCode.E) && !InGameSettingsActive) {
             KillGrapple();
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            if (InGameSettingsActive) {
+                canvasScript.HideInGameSettings();         
+            } else {
+                canvasScript.ShowInGameSettings();
+            }
+        }
     }
 
     // LateUpdate is called every frame after Update
     // Currently responsible for detecting mouse movement and applying it to the player
     void LateUpdate() {
 
-        XRotation = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * YSensitivity * -1;
-        YRotation = Input.GetAxisRaw("Mouse X") * Time.deltaTime * XSensitivity;
+        if (!InGameSettingsActive) {
 
-        transform.rotation *= Quaternion.Euler(XRotation, YRotation, 0);
+            float mouseY = Input.GetAxisRaw("Mouse Y");
+            float mouseX = Input.GetAxisRaw("Mouse X");
+
+            mouseY = Mathf.Sign(mouseY) * Mathf.Pow(Mathf.Abs(mouseY), 1.2f);
+            mouseX = Mathf.Sign(mouseX) * Mathf.Pow(Mathf.Abs(mouseX), 1.2f);
+
+            XRotation = mouseY * Time.deltaTime * YSensitivity * -1;
+            YRotation = mouseX * Time.deltaTime * XSensitivity;
+
+            transform.rotation *= Quaternion.Euler(XRotation, YRotation, 0);
+        }
 
     }
 
@@ -145,22 +167,24 @@ public class PlayerScript : MonoBehaviour {
     void FixedUpdate(){
 
         // Detects jectpack movement and applies it to player if applicable
-        x = Input.GetAxisRaw("Horizontal");
-        y = Input.GetAxisRaw("Vertical");
-        z = (Input.GetKey(KeyCode.Space) ? 1f : 0f) - (Input.GetKey(KeyCode.LeftShift) ? 1f : 0f);
-        Vector3 JetpackForceV =
-            x * transform.right +
-            y * transform.up +
-            z * transform.forward;
-        if (!OnWall && Fuel > 0f && JetpackForceV != Vector3.zero) {
-            rb.AddForce(JetpackForce * JetpackForceV.normalized, ForceMode.Force);
-            Fuel -= FuelDepletionRate * Time.deltaTime;
-            if (Fuel < 0f) {
-                Fuel = 0f;
+        if (!InGameSettingsActive) {
+            x = Input.GetAxisRaw("Horizontal");
+            y = Input.GetAxisRaw("Vertical");
+            z = (Input.GetKey(KeyCode.Space) ? 1f : 0f) - (Input.GetKey(KeyCode.LeftShift) ? 1f : 0f);
+            Vector3 JetpackForceV =
+                x * transform.right +
+                y * transform.up +
+                z * transform.forward;
+            if (!OnWall && Fuel > 0f && JetpackForceV != Vector3.zero) {
+                rb.AddForce(JetpackForce * JetpackForceV.normalized, ForceMode.Force);
+                Fuel -= FuelDepletionRate * Time.deltaTime;
+                if (Fuel < 0f) {
+                    Fuel = 0f;
+                }
+                FuelTimeStamp = Time.time;
+                UpdateFuelUI();
+                UpdateSpeedUI();
             }
-            FuelTimeStamp = Time.time;
-            UpdateFuelUI();
-            UpdateSpeedUI();
         }
 
         // Applies grapple force to player if grapple is connected to a surface

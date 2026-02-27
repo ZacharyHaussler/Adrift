@@ -36,7 +36,7 @@ public class GunScript : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
-        if (Input.GetMouseButton(0) && !Reloading) {
+        if (Input.GetMouseButton(0) && !Reloading && !PlayerScript.InGameSettingsActive) {
             if (Ammo <= 0) {
                 if (!Reloading) {
                     Reloading = true;
@@ -49,7 +49,7 @@ public class GunScript : MonoBehaviour {
 
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && Ammo != AmmoCapacity && !Reloading) {
+        if (Input.GetKeyDown(KeyCode.R) && Ammo != AmmoCapacity && !Reloading && !PlayerScript.InGameSettingsActive) {
             Reloading = true;
             ReloadTimeStamp = Time.time;
 
@@ -79,7 +79,7 @@ public class GunScript : MonoBehaviour {
             transform.rotation = Player.transform.rotation;
         }
 
-        if (Input.GetMouseButton(1)) { 
+        if (Input.GetMouseButton(1) && !PlayerScript.InGameSettingsActive) { 
             transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(0f, -.2f, 1f), 0.2f);
             cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 30, 0.2f);
         
