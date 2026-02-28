@@ -8,9 +8,12 @@ public class BulletScript : MonoBehaviour {
     public void SetValues(GameObject Own, float Dmg, float Speed) {
         Owner = Own;
         Damage = Dmg;
-        gameObject.GetComponent<Rigidbody>().linearVelocity = Speed * Owner.transform.forward + Vector3.Dot(Owner.GetComponent<Rigidbody>().linearVelocity, Owner.transform.forward) * Owner.transform.forward;
-        transform.rotation = Quaternion.LookRotation(Owner.transform.forward) * Quaternion.Euler(90,0,0);
+        //gameObject.GetComponent<Rigidbody>().linearVelocity = Speed * Owner.transform.forward + Vector3.Dot(Owner.GetComponent<Rigidbody>().linearVelocity, Owner.transform.forward) * Owner.transform.forward;
+        
+        //transform.rotation = Quaternion.LookRotation(Owner.transform.forward) * Quaternion.Euler(90,0,0);
 
+
+        gameObject.GetComponent<Rigidbody>().linearVelocity = Speed * transform.forward;
     }
     
     

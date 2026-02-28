@@ -10,6 +10,8 @@ public class GunScript : MonoBehaviour {
     private GameObject Bullet;
     public Camera cam;
 
+    public Transform SpawnPoint;
+
     private float ReloadTime;
     private float FireRate;
     private float LastShotTimeStamp = 0.0f;
@@ -25,6 +27,8 @@ public class GunScript : MonoBehaviour {
     public TextMeshProUGUI AmmoText;
     public TextMeshProUGUI GunText;
     public GameObject ReloadIcon;
+
+    public Transform TargetHitDebugSphere;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
@@ -74,7 +78,8 @@ public class GunScript : MonoBehaviour {
 
         if (Physics.Raycast(Player.transform.position + 0.5f * Player.transform.up, Player.transform.forward, out RaycastHit hit, 1000f)) {
             transform.LookAt(hit.point, Player.transform.up);
-            Debug.Log(hit.distance.ToString());
+            TargetHitDebugSphere.position = hit.point;
+            //Debug.Log(hit.distance.ToString());
         } else {
             transform.rotation = Player.transform.rotation;
         }
@@ -107,7 +112,8 @@ public class GunScript : MonoBehaviour {
 
     private void FireBullet() {
         if (Time.time - LastShotTimeStamp >= FireRate) {
-            Bullet = Instantiate(BulletPrefab, transform.position + 0.5f * Player.transform.right - 0.4f * Player.transform.right + 1.5f * Player.transform.forward, Quaternion.Euler(transform.forward));
+            //Bullet = Instantiate(BulletPrefab, transform.position + 0.5f * Player.transform.right - 0.4f * Player.transform.right + 1.5f * Player.transform.forward, Quaternion.Euler(transform.forward));
+            Bullet = Instantiate(BulletPrefab, SpawnPoint.position, SpawnPoint.rotation);
             Bullet.GetComponent<BulletScript>().SetValues(Player, BulletDmg, BulletSpeed);
             
 
