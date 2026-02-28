@@ -4,6 +4,8 @@ public class BulletScript : MonoBehaviour {
 
     private GameObject Owner;
     public float Damage;
+    public BulletTrail Trail;
+    public GameObject TrailPrefab;
 
     public void SetValues(GameObject Own, float Dmg, float Speed) {
         Owner = Own;
@@ -14,18 +16,23 @@ public class BulletScript : MonoBehaviour {
 
 
         gameObject.GetComponent<Rigidbody>().linearVelocity = Speed * transform.forward;
+        GameObject TrailGO = Instantiate(TrailPrefab, transform.position + transform.forward * 0.15f, transform.rotation);
+        Trail = TrailGO.GetComponent<BulletTrail>();
+        Trail.BulletTF = transform;
     }
     
     
     // Update is called once per frame
     void Update() {
         if (transform.position.magnitude > 500) {
+            Trail.DestroyTrail();
             Destroy(gameObject);
         }
         
     }
 
     void OnCollisionEnter(Collision collision) {
+        Trail.DestroyTrail();
         Destroy(gameObject);
     }
 }
