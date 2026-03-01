@@ -8,6 +8,9 @@ TagManager:
   - Stage
   - Grapple Projectile
   - Bullet
+  - Bounce Pad
+  - Target Block
+  - Black Hole
   layers:
   - Default
   - TransparentFX

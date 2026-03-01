@@ -31,8 +31,28 @@ public class BulletScript : MonoBehaviour {
         
     }
 
+    void FixedUpdate() {
+        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, 2f)) {
+            if (hit.collider.gameObject.tag == "Bounce Pad") {
+                if (hit.normal != hit.collider.transform.forward){
+                    Trail.DestroyTrail();
+                    Destroy(gameObject);
+                } else {
+                    BouncePadBounce(hit.collider.transform.forward);
+                }
+                
+            }
+        }
+    }
+
     void OnCollisionEnter(Collision collision) {
         Trail.DestroyTrail();
         Destroy(gameObject);
+    }
+
+    public void BouncePadBounce(Vector3 PadNormal) {
+        float angle = Vector3.Angle(gameObject.GetComponent<Rigidbody>().linearVelocity.normalized * -1f, PadNormal);
+        Debug.Log(angle);
+        gameObject.GetComponent<Rigidbody>().linearVelocity += 2f*Mathf.Cos(angle * Mathf.Deg2Rad)*gameObject.GetComponent<Rigidbody>().linearVelocity.magnitude * PadNormal;
     }
 }

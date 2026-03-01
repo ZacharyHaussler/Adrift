@@ -5,6 +5,7 @@ using TMPro;
 using System;
 using Unity.Mathematics;
 using UnityEngine.UI;
+using UnityEngine.SocialPlatforms.GameCenter;
 
 
 public class PlayerScript : MonoBehaviour {
@@ -193,32 +194,61 @@ public class PlayerScript : MonoBehaviour {
             OnWall = false;
             UpdateSpeedUI();
         }
+
+        if (Physics.Raycast(transform.position, rb.linearVelocity.normalized, out RaycastHit hit, 1.5f)) {
+            if (hit.collider.gameObject.tag == "Bounce Pad" && hit.normal == hit.collider.transform.forward) {
+                
+                BouncePadBounce(hit.collider.transform.forward); 
+            }
+            
+        }
     }
 
     // OnCollisionEnter is called when the player collides with any other collider
     // Currently responsible for stopping the player when they hit a wall and allowing player to jump off a wall
     // Will need to be modified when other possible collisions are added, eg. bullets and other players
     void OnCollisionEnter(Collision collision) {
-        
+        string tag = collision.gameObject.tag;
+        switch (tag) {
+            case "Stage":
+                WallCollision(collision);
+                break;
+            case "Target Block":
+                WallCollision(collision);
+                break;
+        }
+        UpdateSpeedUI();
+    }
+
+    public void BouncePadBounce(Vector3 PadNormal) {
+        float angle = Vector3.Angle(rb.linearVelocity.normalized * -1f, PadNormal);
+        Debug.Log(angle);
+        rb.linearVelocity += 2f*Mathf.Cos(angle * Mathf.Deg2Rad)*rb.linearVelocity.magnitude * PadNormal;
+        if (rb.linearVelocity.magnitude < 20f) {
+            rb.linearVelocity = rb.linearVelocity.normalized * 20f;
+        }
+    }
+
+    private void WallCollision(Collision collision) {
         // Collision damage if player is moving too fast
         if (collision.relativeVelocity.magnitude > DeathSpeed) {
             TakeDamage(100f);
         } else if (collision.relativeVelocity.magnitude > DangerSpeed) {
             TakeDamage(100f * (collision.relativeVelocity.magnitude - DangerSpeed) / (DeathSpeed - DangerSpeed));
         }
-
         // Causes player to stick to wall
         rb.linearVelocity = new Vector3(0,0,0);
         OnWall = true;
-
         // Destroys grapple to avoid sketchy nonsense
         if (GrappleConnected) {
             KillGrapple();
         }
-
         PlayerModel.GetComponent<PlayerModelScript>().LandedOnWall(collision);
-        UpdateSpeedUI();
     }
+
+
+
+
 
     // Called by the grapple when the grapple lands
     public void GrappleLanded() {
@@ -226,7 +256,6 @@ public class PlayerScript : MonoBehaviour {
     }
 
     // Destroys the grapple and grapple line
-    // CURRENTLY BUGGED IN SOME WAY
     void KillGrapple() {
         if (Grapple != null) {
             GrappleConnected = false;
@@ -251,7 +280,7 @@ public class PlayerScript : MonoBehaviour {
         Healthbar.GetComponent<RectTransform>().sizeDelta = new Vector2(4.5f * PlayerHealth, 20);
         Healthbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(265f - (450f - 4.5f * PlayerHealth)/2, 40);
 
-        HealthText.GetComponent<TextMeshProUGUI>().text = "Health - " + (math.floor(PlayerHealth*10)/10).ToString();
+        HealthText.GetComponent<TextMeshProUGUI>().text = "Health - " + (Math.Floor(PlayerHealth*10)/10).ToString();
     }
 
     // Updates the fuel bar when fuel is lost or gained
@@ -260,7 +289,7 @@ public class PlayerScript : MonoBehaviour {
         FuelBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(75, 50 - (600f - 6f * Fuel)/2);
     }
 
-    private void UpdateSpeedUI() {
+    public void UpdateSpeedUI() {
         if (SpeedBarMax < rb.linearVelocity.magnitude) {
             SpeedBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 600);
             SpeedBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-75, 50);
