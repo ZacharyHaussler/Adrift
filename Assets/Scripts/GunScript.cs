@@ -27,6 +27,7 @@ public class GunScript : MonoBehaviour {
     public TextMeshProUGUI AmmoText;
     public TextMeshProUGUI GunText;
     public GameObject ReloadIcon;
+    public GameObject Crosshair;
 
     public Transform TargetHitDebugSphere;
 
@@ -34,6 +35,7 @@ public class GunScript : MonoBehaviour {
     void Start() {
         UpdateGunSelection();
         ReloadIcon.SetActive(false);
+        Crosshair.SetActive(true);
         transform.position = new Vector3(.5f, 0.1f, 1f);
     }
 
@@ -46,6 +48,7 @@ public class GunScript : MonoBehaviour {
                     Reloading = true;
                     ReloadTimeStamp = Time.time;
                     ReloadIcon.SetActive(true);
+                    Crosshair.SetActive(false);
                 }
             } else {
                 FireBullet();
@@ -58,6 +61,7 @@ public class GunScript : MonoBehaviour {
             ReloadTimeStamp = Time.time;
 
             ReloadIcon.SetActive(true);
+            Crosshair.SetActive(false);
         }
 
         if (Reloading) {
@@ -65,6 +69,7 @@ public class GunScript : MonoBehaviour {
                 Ammo = AmmoCapacity;
                 Reloading = false;
                 ReloadIcon.SetActive(false);
+                Crosshair.SetActive(true);
                 AmmoText.text = Ammo + " / " + AmmoCapacity;
             }
         }

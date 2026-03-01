@@ -62,10 +62,11 @@ public class PlayerScript : MonoBehaviour {
     public GameObject Healthbar; //connected to the green bar on the UI that displays the player's hp
     public GameObject HealthText; //connected to the text above the green bar on the UI. Displays a label and a numerical value for the player's health
     public GameObject FuelBar; //connected to the orange bar on the UI that displays the player's fuel
-    public GameObject SpeedBar;
-    public GameObject Exclaim;
-    public GameObject SkullWarning;
-    private float SpeedBarMax;
+    //public GameObject SpeedBar;
+    public GameObject DamageWarning;
+    public GameObject DeathWarning;
+    public Image RedVignette;
+    //private float SpeedBarMax;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -74,8 +75,8 @@ public class PlayerScript : MonoBehaviour {
         rb = GetComponent<Rigidbody>();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        SpeedBarMax = DeathSpeed + DeathSpeed/12;
-        Exclaim.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -250f + DangerSpeed/SpeedBarMax*600f);
+        //SpeedBarMax = DeathSpeed + DeathSpeed/12;
+        //Exclaim.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -250f + DangerSpeed/SpeedBarMax*600f);
         UpdateSpeedUI();
 
         XSensitivity = PlayerPrefs.GetFloat("XSensitivity", 500f);
@@ -277,40 +278,52 @@ public class PlayerScript : MonoBehaviour {
 
     // Updates the healthbar when damage is taken or healing is recieved 
     private void UpdateHeathUI() {
-        Healthbar.GetComponent<RectTransform>().sizeDelta = new Vector2(4.5f * PlayerHealth, 20);
-        Healthbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(265f - (450f - 4.5f * PlayerHealth)/2, 40);
+        Healthbar.GetComponent<RectTransform>().sizeDelta = new Vector2(4.5f * PlayerHealth, 10);
+        Healthbar.GetComponent<RectTransform>().anchoredPosition = new Vector2(225f - (450f - 4.5f * PlayerHealth)/2, 5);
 
-        HealthText.GetComponent<TextMeshProUGUI>().text = "Health - " + (Math.Floor(PlayerHealth*10)/10).ToString();
+        HealthText.GetComponent<TextMeshProUGUI>().text = (math.floor(PlayerHealth*10)/10).ToString();
+
+        if (PlayerHealth <= 30f) {
+            RedVignette.color = new Color(255f, 0f, 0f, (50f - PlayerHealth*(5f/3f))/255f);
+        } else {
+            RedVignette.color = new Color(255f, 0f, 0f, 0f);
+        }
     }
 
     // Updates the fuel bar when fuel is lost or gained
     private void UpdateFuelUI() {
-        FuelBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 6f * Fuel);
-        FuelBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(75, 50 - (600f - 6f * Fuel)/2);
+        // FuelBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 6f * Fuel);
+        // FuelBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(75, 50 - (600f - 6f * Fuel)/2);
+        FuelBar.GetComponent<RectTransform>().sizeDelta = new Vector2(13.2f * Fuel, 10f);
     }
 
-    public void UpdateSpeedUI() {
-        if (SpeedBarMax < rb.linearVelocity.magnitude) {
-            SpeedBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 600);
-            SpeedBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-75, 50);
-        } else {
-            SpeedBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, rb.linearVelocity.magnitude/SpeedBarMax*600f);
-            SpeedBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-75, -250f + rb.linearVelocity.magnitude/SpeedBarMax*300f);
-        }
+    private void UpdateSpeedUI() {
+        // if (SpeedBarMax < rb.linearVelocity.magnitude) {
+        //     SpeedBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 600);
+        //     SpeedBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-75, 50);
+        // } else {
+        //     SpeedBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, rb.linearVelocity.magnitude/SpeedBarMax*600f);
+        //     SpeedBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-75, -250f + rb.linearVelocity.magnitude/SpeedBarMax*300f);
+        // }
 
         if (rb.linearVelocity.magnitude >= DeathSpeed) {
-            SpeedBar.GetComponent<Image>().color = new Color32(230, 50, 30, 255); 
-            SkullWarning.GetComponent<CanvasGroup>().alpha = 0.8f;
-            Exclaim.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.8f;
-
+            // SpeedBar.GetComponent<Image>().color = new Color32(230, 50, 30, 255); 
+            // SkullWarning.GetComponent<CanvasGroup>().alpha = 0.8f;
+            // Exclaim.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.8f;
+            DeathWarning.SetActive(true);
+            DamageWarning.SetActive(false);
         } else if (rb.linearVelocity.magnitude >= DangerSpeed) {
-            SpeedBar.GetComponent<Image>().color = new Color32(230, 200, 30, 255); 
-            SkullWarning.GetComponent<CanvasGroup>().alpha = 0.25f;
-            Exclaim.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.8f;
+            // SpeedBar.GetComponent<Image>().color = new Color32(230, 200, 30, 255); 
+            // SkullWarning.GetComponent<CanvasGroup>().alpha = 0.25f;
+            // Exclaim.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.8f;
+            DeathWarning.SetActive(false);
+            DamageWarning.SetActive(true);
         } else {
-            SpeedBar.GetComponent<Image>().color = new Color32(33, 188, 232, 255);
-            SkullWarning.GetComponent<CanvasGroup>().alpha = 0.25f;
-            Exclaim.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.25f;
+            // SpeedBar.GetComponent<Image>().color = new Color32(33, 188, 232, 255);
+            // SkullWarning.GetComponent<CanvasGroup>().alpha = 0.25f;
+            // Exclaim.transform.GetChild(0).GetComponent<CanvasGroup>().alpha = 0.25f;
+            DeathWarning.SetActive(false);
+            DamageWarning.SetActive(false);
         }
 
         

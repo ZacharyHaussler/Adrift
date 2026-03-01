@@ -6,6 +6,8 @@ public class BulletScript : MonoBehaviour {
     public float Damage;
     public BulletTrail Trail;
     public GameObject TrailPrefab;
+    public GameObject HitEffectPrefab;
+    public GameObject ImpactDecalPrefab;
 
     public void SetValues(GameObject Own, float Dmg, float Speed) {
         Owner = Own;
@@ -47,6 +49,9 @@ public class BulletScript : MonoBehaviour {
 
     void OnCollisionEnter(Collision collision) {
         Trail.DestroyTrail();
+        //Instantiate(HitEffectPrefab, transform.position + transform.forward * 0.15f, transform.rotation * Quaternion.Euler(180,0,0));
+        Instantiate(HitEffectPrefab, transform.position, transform.rotation * Quaternion.Euler(180,0,0));
+        Instantiate(ImpactDecalPrefab, transform.position, Quaternion.LookRotation(collision.contacts[0].normal, Vector3.up) * Quaternion.Euler(180,0,0));
         Destroy(gameObject);
     }
 

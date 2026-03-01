@@ -4269,6 +4269,8 @@ MonoBehaviour:
   Damage: 0
   Trail: {fileID: 0}
   TrailPrefab: {fileID: 8183140601257471275, guid: 2957f1cfb8bc94d2ca4d13cf5f2de9b5, type: 3}
+  HitEffectPrefab: {fileID: 7923109862909674424, guid: 97e5efcb690e649a0aad8bbdff47c741, type: 3}
+  ImpactDecalPrefab: {fileID: 8604259325774216799, guid: 76842433c12aa4d3ca269071cbdf554c, type: 3}
 --- !u!1 &8048089486762057617
 GameObject:
   m_ObjectHideFlags: 0
