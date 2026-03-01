@@ -297,7 +297,7 @@ public class PlayerScript : MonoBehaviour {
         FuelBar.GetComponent<RectTransform>().sizeDelta = new Vector2(13.2f * Fuel, 10f);
     }
 
-    private void UpdateSpeedUI() {
+    public void UpdateSpeedUI() {
         // if (SpeedBarMax < rb.linearVelocity.magnitude) {
         //     SpeedBar.GetComponent<RectTransform>().sizeDelta = new Vector2(20, 600);
         //     SpeedBar.GetComponent<RectTransform>().anchoredPosition = new Vector2(-75, 50);
