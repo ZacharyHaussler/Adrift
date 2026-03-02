@@ -106,7 +106,7 @@ public class GunScript : MonoBehaviour {
                 ReloadTime = 2f;
                 AmmoCapacity = 15;
                 BulletDmg = 20;
-                BulletSpeed = 100f;
+                BulletSpeed = 300f; // temp changed from 100f
                 print("case called");
                 break;
         }

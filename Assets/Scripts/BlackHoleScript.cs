@@ -17,10 +17,10 @@ public class BlackHoleScript : MonoBehaviour
     void OnTriggerStay(Collider other) {
         if (other.gameObject.tag == "Bullet") {
             float distance = Vector3.Distance(transform.position, other.transform.position);
-            other.gameObject.GetComponentInParent<Rigidbody>().AddForce(30f/distance/distance * (transform.position - other.transform.position), ForceMode.Force);
+            other.gameObject.GetComponentInParent<Rigidbody>().AddForce(ForceOnBullet/distance/distance * (transform.position - other.transform.position), ForceMode.Force);
         } else if (other.gameObject.tag == "Player") {
             float distance = Vector3.Distance(transform.position, other.transform.position);
-            other.gameObject.GetComponent<Rigidbody>().AddForce(300f/distance/distance * (transform.position - other.transform.position), ForceMode.Force);
+            other.gameObject.GetComponent<Rigidbody>().AddForce(ForceOnPlayer/distance/distance * (transform.position - other.transform.position), ForceMode.Force);
             other.gameObject.GetComponent<PlayerScript>().UpdateSpeedUI();
         }
     }

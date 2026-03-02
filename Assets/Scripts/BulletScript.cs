@@ -34,7 +34,7 @@ public class BulletScript : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, 2f)) {
+        if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, 4f)) {
             if (hit.collider.gameObject.tag == "Bounce Pad") {
                 if (hit.normal != hit.collider.transform.forward){
                     Trail.DestroyTrail();

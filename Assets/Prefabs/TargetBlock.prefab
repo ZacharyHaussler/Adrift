@@ -771,6 +771,7 @@ MonoBehaviour:
   health: 100
   mapRadius: 50
   TextMesh: {fileID: 2292082850169122467}
+  ExplosionPrefab: {fileID: 5495096810439736659, guid: ceb949fa80c6d413b98b02dbfde264bd, type: 3}
 --- !u!1 &5681163962883141499
 GameObject:
   m_ObjectHideFlags: 0

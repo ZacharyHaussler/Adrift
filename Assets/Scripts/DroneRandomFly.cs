@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class DroneRandomFly : MonoBehaviour
-{
+public class DroneRandomFly : MonoBehaviour {
     [Header("Movement Settings")]
     public float moveSpeed = 10f;
     public float rotationSpeed = 2f;
@@ -14,10 +13,11 @@ public class DroneRandomFly : MonoBehaviour
     private Vector3 targetDirection;
     private float directionTimer;
 
+    public GameObject ExplosionPrefab;
+
     void Start()
     {
         Vector3 randomDirection = Random.insideUnitSphere * sphereRadius;
-        randomDirection += transform.position;
         transform.position = randomDirection;
         PickNewDirection();
         directionTimer = directionChangeInterval;
@@ -78,5 +78,11 @@ public class DroneRandomFly : MonoBehaviour
     {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(sphereCenter, sphereRadius);
+    }
+
+    void OnCollisionEnter(Collision collision) {
+        Instantiate(ExplosionPrefab, transform.position, Quaternion.identity);
+        Vector3 randomDirection = Random.insideUnitSphere * sphereRadius;
+        transform.position = randomDirection;
     }
 }
