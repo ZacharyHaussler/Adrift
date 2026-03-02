@@ -41,8 +41,7 @@ public class BulletScript : MonoBehaviour {
                     Destroy(gameObject);
                 } else {
                     BouncePadBounce(hit.collider.transform.forward);
-                }
-                
+                }   
             }
         }
     }

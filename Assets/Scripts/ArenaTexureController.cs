@@ -12,6 +12,7 @@ public class ArenaTexureController : MonoBehaviour {
 
     void Start()
     {
+        transform.localEulerAngles = transform.localEulerAngles + new Vector3(Mathf.Abs(transform.position.y * 0.5f), 0f, 0f);
         mat = GetComponent<Renderer>().material;
         mat.SetFloat("_EmissionStrength", emissionStrength);
 
