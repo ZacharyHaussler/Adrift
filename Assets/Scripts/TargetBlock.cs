@@ -7,15 +7,9 @@ public class TargetBlock : MonoBehaviour {
     public float mapRadius = 50f;
     public TextMeshPro TextMesh;
     public GameObject ExplosionPrefab;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
     void Start(){
         randomPos();
-    }
-
-    // Update is called once per frame
-    void Update() {
-        
     }
 
     void OnCollisionEnter(Collision collision) {
