@@ -7,7 +7,6 @@ public class GunScript : MonoBehaviour {
     public int GunType = 0;
     private string[] GunNames = {"ProtoGun"};
     public GameObject Player;
-    private GameObject Bullet;
     public Camera cam;
 
     public Transform SpawnPoint;
@@ -31,15 +30,15 @@ public class GunScript : MonoBehaviour {
 
     public Transform TargetHitDebugSphere;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    //public GameObject MuzzleFlashPrefab;
+
     void Start() {
         UpdateGunSelection();
         ReloadIcon.SetActive(false);
         Crosshair.SetActive(true);
         transform.position = new Vector3(.5f, 0.1f, 1f);
     }
-
-    // Update is called once per frame
+    
     void Update() {
 
         if (Input.GetMouseButton(0) && !Reloading && !PlayerScript.InGameSettingsActive) {
@@ -119,9 +118,11 @@ public class GunScript : MonoBehaviour {
     private void FireBullet() {
         if (Time.time - LastShotTimeStamp >= FireRate) {
             //Bullet = Instantiate(BulletPrefab, transform.position + 0.5f * Player.transform.right - 0.4f * Player.transform.right + 1.5f * Player.transform.forward, Quaternion.Euler(transform.forward));
-            Bullet = Instantiate(BulletPrefab, SpawnPoint.position, SpawnPoint.rotation);
-            Bullet.GetComponent<BulletScript>().SetValues(Player, BulletDmg, BulletSpeed);
+            GameObject Bullet = Instantiate(BulletPrefab, SpawnPoint.position, SpawnPoint.rotation);
+            //GameObject MuzzleFlash = Instantiate(MuzzleFlashPrefab, SpawnPoint.position, SpawnPoint.rotation);
             
+            Bullet.GetComponent<BulletScript>().SetValues(Player, BulletDmg, BulletSpeed);
+            //MuzzleFlash.GetComponent<SetVelocity>().velocity = Player.GetComponent<Rigidbody>().linearVelocity;
 
 
             LastShotTimeStamp = Time.time;
