@@ -32,6 +32,7 @@ public class PlayerScript : MonoBehaviour {
     public float YSensitivity = 100f; //mouse sensitivity in the vertical direction
     private float XRotation; //degrees the player rotates about the local x axis every frame. Calculated with YSensitivity
     private float YRotation; //degrees the player rotates about the local y axis every frame. Calculated with XSensitivity
+    public static bool isScoped = false;
 
     //Player Movement
     private float x = 0.0f; //variables that store the player's intention with respect to jetpack movement
@@ -152,6 +153,11 @@ public class PlayerScript : MonoBehaviour {
 
             float mouseY = Input.GetAxisRaw("Mouse Y");
             float mouseX = Input.GetAxisRaw("Mouse X");
+
+            if (isScoped) {
+                mouseY *= 0.5f;
+                mouseX *= 0.5f;
+            }
 
             mouseY = Mathf.Sign(mouseY) * Mathf.Pow(Mathf.Abs(mouseY), 1.2f);
             mouseX = Mathf.Sign(mouseX) * Mathf.Pow(Mathf.Abs(mouseX), 1.2f);

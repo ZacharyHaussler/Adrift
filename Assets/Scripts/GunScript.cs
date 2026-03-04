@@ -92,10 +92,11 @@ public class GunScript : MonoBehaviour {
         if (Input.GetMouseButton(1) && !PlayerScript.InGameSettingsActive) { 
             transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(0f, -.2f, 1f), 0.2f);
             cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 30, 0.2f);
-        
+            PlayerScript.isScoped = true;
         } else  {
             transform.localPosition = Vector3.Lerp(transform.localPosition, new Vector3(0.5f, -.4f, 1f), 0.1f);
             cam.fieldOfView = Mathf.Lerp(cam.fieldOfView, 70, 0.2f);
+            PlayerScript.isScoped = false;
         }
     }
 
