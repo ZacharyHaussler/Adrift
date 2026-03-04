@@ -2,6 +2,6 @@
 
 Pro tip: "An object in motion stays in motion."
 
-## Adrift is an in-development FPS game, centered around zero-gravity movement
+<!-- ## Adrift is an in-development FPS game, centered around zero-gravity movement
 
-Stay tuned.
+Stay tuned. -->
