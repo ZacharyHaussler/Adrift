@@ -15,20 +15,19 @@ public class DroneRandomFly : MonoBehaviour {
 
     public GameObject ExplosionPrefab;
 
-    void Start()
-    {
+    public DroneController Controller;
+
+    void Start() {
         Vector3 randomDirection = Random.insideUnitSphere * sphereRadius;
         transform.position = randomDirection;
         PickNewDirection();
         directionTimer = directionChangeInterval;
     }
 
-    void Update()
-    {
+    void Update() {
         directionTimer -= Time.deltaTime;
 
-        if (directionTimer <= 0f)
-        {
+        if (directionTimer <= 0f) {
             PickNewDirection();
             directionTimer = directionChangeInterval;
         }
@@ -39,13 +38,11 @@ public class DroneRandomFly : MonoBehaviour {
         MoveForward();
     }
 
-    void PickNewDirection()
-    {
+    void PickNewDirection() {
         targetDirection = Random.onUnitSphere;
     }
 
-    void RotateTowardsDirection()
-    {
+    void RotateTowardsDirection() {
         if (targetDirection == Vector3.zero)
             return;
 
@@ -57,32 +54,35 @@ public class DroneRandomFly : MonoBehaviour {
         );
     }
 
-    void MoveForward()
-    {
+    void MoveForward() {
         transform.position += transform.forward * moveSpeed * Time.deltaTime;
     }
 
-    void StayInsideSphere()
-    {
+    void StayInsideSphere(){
         Vector3 offset = transform.position - sphereCenter;
         float distanceFromCenter = offset.magnitude;
 
-        if (distanceFromCenter > sphereRadius)
-        {
+        if (distanceFromCenter > sphereRadius) {
             // Force direction back toward center
             targetDirection = (sphereCenter - transform.position).normalized;
         }
     }
 
-    void OnDrawGizmosSelected()
-    {
+    void OnDrawGizmosSelected() {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(sphereCenter, sphereRadius);
     }
 
     void OnCollisionEnter(Collision collision) {
-        Instantiate(ExplosionPrefab, transform.position, Quaternion.identity);
-        Vector3 randomDirection = Random.insideUnitSphere * sphereRadius;
-        transform.position = randomDirection;
+        GameObject Explosion = Instantiate(ExplosionPrefab, transform.position, Quaternion.identity);
+        Explosion.GetComponent<SetVelocity>().velocity = transform.forward * moveSpeed;
+        // Vector3 randomDirection = sphereCenter + Random.insideUnitSphere * sphereRadius;
+        // transform.position = randomDirection;
+        Controller.DroneDestroyed();
+        Invoke("DestroySelf", 0.1f);
+    }
+
+    void DestroySelf() {
+        Destroy(gameObject);
     }
 }
