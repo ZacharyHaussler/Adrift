@@ -1,12 +1,14 @@
 using UnityEngine;
 
 public class TimedDestroy : MonoBehaviour {
+
     public float DestroyTime = 5f;
+    
     void Start(){
-        Invoke("DestorySelf", DestroyTime);
+        Invoke("DestroySelf", DestroyTime);
     }
 
-    private void DestorySelf() {
+    private void DestroySelf() {
         Destroy(gameObject);
     }
 }

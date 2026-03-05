@@ -23,17 +23,20 @@ public class CanvasScript : MonoBehaviour {
         HText.text = Mathf.Round((HSensSlider.value - 100f) / 1900f * 100f).ToString() + "%";
         player.XSensitivity = HSensSlider.value;
     }
+
     public void SetYSensitivity() {
         PlayerPrefs.SetFloat("YSensitivity", VSensSlider.value);
         VText.text = Mathf.Round((VSensSlider.value - 100f) / 1900f * 100f).ToString() + "%";
         player.YSensitivity = VSensSlider.value;
     }
+
     public void ShowInGameSettings() {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
         InGameSettingsMenu.SetActive(true);
         PlayerScript.InGameSettingsActive = true;
     }
+    
     public void HideInGameSettings() {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;

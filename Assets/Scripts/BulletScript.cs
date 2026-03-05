@@ -23,8 +23,6 @@ public class BulletScript : MonoBehaviour {
         Trail.BulletTF = transform;
     }
     
-    
-    // Update is called once per frame
     void Update() {
         if (transform.position.magnitude > 500) {
             Trail.DestroyTrail();

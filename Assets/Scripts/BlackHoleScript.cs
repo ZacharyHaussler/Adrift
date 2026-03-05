@@ -7,12 +7,9 @@ public class BlackHoleScript : MonoBehaviour
     public float ForceOnBullet = 30f;
     public float Radius = 10f;
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start() {
         transform.localScale = new Vector3(Radius/10f, Radius/10f, Radius/10f);
     }
-
-    
 
     void OnTriggerStay(Collider other) {
         if (other.gameObject.tag == "Bullet") {

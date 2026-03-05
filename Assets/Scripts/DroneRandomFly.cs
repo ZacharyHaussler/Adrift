@@ -1,12 +1,10 @@
 using UnityEngine;
 
 public class DroneRandomFly : MonoBehaviour {
-    [Header("Movement Settings")]
     public float moveSpeed = 10f;
     public float rotationSpeed = 2f;
     public float directionChangeInterval = 3f;
 
-    [Header("Boundary Settings")]
     public float sphereRadius = 100f;
     public Vector3 sphereCenter = Vector3.zero;
 
